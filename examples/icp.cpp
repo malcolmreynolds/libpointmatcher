@@ -112,7 +112,7 @@ int main(int argc, const char *argv[])
 	
 	if (!(cloudDimension == 2 || cloudDimension == 3)) 
 	{
-		cerr << "Invalid input point clouds dimension" << endl;
+		cerr << "Invalid input point clouds dimension = " << cloudDimension << endl;
 		exit(1);
 	}
 
@@ -137,16 +137,16 @@ int main(int argc, const char *argv[])
 
 	// Compute the transformation to express data in ref
 	PM::TransformationParameters T = icp(initializedData, ref);
-	cout << "match ratio: " << icp.errorMinimizer->getWeightedPointUsedRatio() << endl;
+	// cout << outputBaseFile << " match ratio: " << icp.errorMinimizer->getWeightedPointUsedRatio() << endl;
 
 	// Transform data to express it in ref
 	DP data_out(initializedData);
 	icp.transformations.apply(data_out, T);
 
 	// Safe files to see the results
-	ref.save(outputBaseFile + "_ref.vtk");
-	data.save(outputBaseFile + "_data_in.vtk");
-	data_out.save(outputBaseFile + "_data_out.vtk");
+	ref.save(outputBaseFile + "_ref.ply");
+	data.save(outputBaseFile + "_data_in.ply");
+	data_out.save(outputBaseFile + "_data_out.ply");
 	if(isTransfoSaved) {
 		ofstream transfoFile;
 		string initFileName = outputBaseFile + "_init_transfo.txt";
