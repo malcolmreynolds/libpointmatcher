@@ -55,6 +55,7 @@ int validateArgs(const int argc, const char *argv[],
 				 bool& isTransfoSaved,
 				 string& configFile,
 				 string& outputBaseFile,
+				 string& format,
 				 string& initTranslation, string& initRotation);
 PM::TransformationParameters parseTranslation(string& translation,
 											  const int cloudDimension);
@@ -74,10 +75,11 @@ int main(int argc, const char *argv[])
 	bool isTransfoSaved = false;
 	string configFile;
 	string outputBaseFile("test");
+	string format("vtk")
 	string initTranslation("0,0,0");
 	string initRotation("1,0,0;0,1,0;0,0,1");
 	const int ret = validateArgs(argc, argv, isTransfoSaved, configFile,
-								 outputBaseFile, initTranslation, initRotation);
+								 outputBaseFile, format, initTranslation, initRotation);
 	if (ret != 0)
 	{
 		return ret;
@@ -144,9 +146,9 @@ int main(int argc, const char *argv[])
 	icp.transformations.apply(data_out, T);
 
 	// Safe files to see the results
-	ref.save(outputBaseFile + "_ref.ply");
-	data.save(outputBaseFile + "_data_in.ply");
-	data_out.save(outputBaseFile + "_data_out.ply");
+	ref.save(outputBaseFile + "_ref." + format);
+	data.save(outputBaseFile + "_data_in" + format);
+	data_out.save(outputBaseFile + "_data_out" + format);
 	if(isTransfoSaved) {
 		ofstream transfoFile;
 		string initFileName = outputBaseFile + "_init_transfo.txt";
@@ -224,6 +226,7 @@ int validateArgs(const int argc, const char *argv[],
 				 bool& isTransfoSaved,
 				 string& configFile,
 				 string& outputBaseFile,
+				 string& format,
 				 string& initTranslation, string& initRotation)
 {
 	if (argc == 1)
@@ -274,6 +277,9 @@ int validateArgs(const int argc, const char *argv[],
 		}
 		else if (opt == "--output") {
 			outputBaseFile = argv[i+1];
+		}
+		else if (opt == "--format") {
+			format = argv[i+1];
 		}
 		else if (opt == "--initTranslation") {
 			initTranslation = argv[i+1];
@@ -377,6 +383,7 @@ void usage(const char *argv[])
 	cerr << "OPTIONS can be a combination of:" << endl;
 	cerr << "--config YAML_CONFIG_FILE  Load the config from a YAML file (default: default parameters)" << endl;
 	cerr << "--output BASEFILENAME      Name of output files (default: test)" << endl;
+	cerr << "--format FORMATNAME        Format for inputs and outputs (default: vtk)" << endl;
 	cerr << "--initTranslation [x,y,z]  Add an initial 3D translation before applying ICP (default: 0,0,0)" << endl;
 	cerr << "--initTranslation [x,y]    Add an initial 2D translation before applying ICP (default: 0,0)" << endl;
 	cerr << "--initRotation [r00,r01,r02,r10,r11,r12,r20,r21,r22]" << endl;
